@@ -5,12 +5,12 @@ post them on the <https://vk.com/>  community wall.
 
 ## How to install
 
-Variables `group_id` and `vk_tokken` store data for autorization in 
+Variables `vk_group_id` and `vk_tokken` store data for autorization in 
 [vk.com](https://vk.com) and pull in from the `.env` file.
 
 ```python
 vk_tokken = os.getenv('VK_TOKKEN')
-group_id = os.getenv('GROUP_ID')
+vk_group_id = os.getenv('VK_GROUP_ID')
 ```
 The `.env` file is located in the root directory.
 ```
@@ -22,7 +22,7 @@ In the `.env` file, keys are written follows:
 
 ```python
 VK_TOKKEN=[vk tokken]
-GROUP_ID=[vk group id]
+VK_GROUP_ID=[vk group id]
 ```
 
 Python3 must already be installed. Then use pip (or pip3 if you have

@@ -159,7 +159,7 @@ if __name__ == '__main__':
     load_dotenv()
 
     vk_tokken = os.getenv('VK_TOKKEN')
-    vk_group_id = os.getenv('GROUP_ID')
+    vk_group_id = os.getenv('VK_GROUP_ID')
 
     xkcd_url = 'http://xkcd.com/info.0.json'
     number_comics = determining_number_comics(xkcd_url)
