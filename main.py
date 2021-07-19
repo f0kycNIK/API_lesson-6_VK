@@ -60,14 +60,14 @@ def get_upload_url(url, vk_group_id, vk_tokken, vk_api_version):
 
 
 def upload_photo(url, image_path):
-        with open(image_path, 'rb') as image:
-            files = {
-                'photo': image,
-            }
-            response = requests.post(url, files=files)
-            response.raise_for_status()
-            photo = response.json()
-            return photo
+    with open(image_path, 'rb') as image:
+        files = {
+            'photo': image,
+        }
+        response = requests.post(url, files=files)
+        response.raise_for_status()
+        photo = response.json()
+        return photo
 
 
 def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
@@ -84,8 +84,9 @@ def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
     }
     response = requests.post(new_url, data=payload)
     response.raise_for_status()
-    owner_id = response.json()['response'][0]['owner_id']
-    photo_id = response.json()['response'][0]['id']
+    image_characteristics = response.json()
+    owner_id = image_characteristics['response'][0]['owner_id']
+    photo_id = image_characteristics['response'][0]['id']
     return owner_id, photo_id
 
 
@@ -142,7 +143,8 @@ def publication_photo(number_comics, vk_group_id, vk_tokken):
                 owner_id, photo_id = save_photo(vk_url, photo, image_text,
                                                 vk_tokken, vk_group_id,
                                                 vk_api_version)
-                publication_photo_on_wall(vk_url, vk_group_id, owner_id, photo_id,
+                publication_photo_on_wall(vk_url, vk_group_id, owner_id,
+                                          photo_id,
                                           vk_tokken, vk_api_version)
                 posted_pics.append(image_name)
                 saving_pics_list(posted_pics)
@@ -160,4 +162,3 @@ if __name__ == '__main__':
     xkcd_url = 'http://xkcd.com/info.0.json'
     number_comics = determining_number_comics(xkcd_url)
     publication_photo(number_comics, vk_group_id, vk_tokken)
-
