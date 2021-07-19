@@ -139,19 +139,21 @@ def publication_photo(number_comics, vk_group_id, vk_tokken):
         image_url, image_name, image_text = get_image_url(url)
         posted_pics = opening_pics_list()
         if image_name not in posted_pics:
-            file_path = download_image(image_url, image_name, xkcd_folder)
-            vk_url = 'https://api.vk.com/method/'
-            upload_url = get_upload_url(vk_url, vk_group_id, vk_tokken,
-                                        vk_api_version)
-            photo = upload_photo(upload_url, image_name)
-            owner_id, photo_id = save_photo(vk_url, photo, image_text,
-                                            vk_tokken, vk_group_id,
+            try:
+                file_path = download_image(image_url, image_name, xkcd_folder)
+                vk_url = 'https://api.vk.com/method/'
+                upload_url = get_upload_url(vk_url, vk_group_id, vk_tokken,
                                             vk_api_version)
-            publication_photo_on_wall(vk_url, vk_group_id, owner_id, photo_id,
-                                      vk_tokken, vk_api_version)
-            posted_pics.append(image_name)
-            saving_pics_list(posted_pics)
-            deletion_pic(file_path)
+                photo = upload_photo(upload_url, image_name)
+                owner_id, photo_id = save_photo(vk_url, photo, image_text,
+                                                vk_tokken, vk_group_id,
+                                                vk_api_version)
+                publication_photo_on_wall(vk_url, vk_group_id, owner_id, photo_id,
+                                          vk_tokken, vk_api_version)
+                posted_pics.append(image_name)
+                saving_pics_list(posted_pics)
+            finally:
+                deletion_pic(file_path)
         time.sleep(timeout)
 
 
