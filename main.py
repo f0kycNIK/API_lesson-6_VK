@@ -45,12 +45,12 @@ def download_image(image_url, image_name, folder):
     return file_path
 
 
-def get_upload_url(url, vk_group_id, vk_tokken, vk_api_version):
+def get_upload_url(url, vk_group_id, vk_token, vk_api_version):
     method = 'photos.getWallUploadServer'
     new_url = url + method
     payload = {
         'group_id': vk_group_id,
-        'access_token': vk_tokken,
+        'access_token': vk_token,
         'v': vk_api_version,
     }
     response = requests.get(new_url, params=payload)
@@ -70,7 +70,7 @@ def upload_photo(url, image_path):
         return photo
 
 
-def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
+def save_photo(url, photo, text, vk_token, group_id, vk_api_version):
     method = 'photos.saveWallPhoto'
     new_url = url + method
     payload = {
@@ -79,7 +79,7 @@ def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
         'photo': photo['photo'],
         'hash': photo['hash'],
         'caption': text,
-        'access_token': vk_tokken,
+        'access_token': vk_token,
         'v': vk_api_version,
     }
     response = requests.post(new_url, data=payload)
@@ -90,7 +90,7 @@ def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
     return owner_id, photo_id
 
 
-def publication_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_tokken,
+def publication_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
                               vk_api_version):
     method = 'wall.post'
     from_group = 1
@@ -103,7 +103,7 @@ def publication_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_tokken,
         'from_group': from_group,
         'friends_only': friends_only,
         'attachments': f'photo{owner_id}_{photo_id}',
-        'access_token': vk_tokken,
+        'access_token': vk_token,
         'v': vk_api_version,
     }
     response = requests.post(new_url, data=payload)
@@ -123,7 +123,7 @@ def deletion_pic(file_path):
         print('Ошибка: %s: %s' % (file_path, exception.strerror))
 
 
-def publication_photo(number_comics, vk_group_id, vk_tokken):
+def publication_photo(number_comics, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
@@ -137,15 +137,15 @@ def publication_photo(number_comics, vk_group_id, vk_tokken):
             try:
                 file_path = download_image(image_url, image_name, xkcd_folder)
                 vk_url = 'https://api.vk.com/method/'
-                upload_url = get_upload_url(vk_url, vk_group_id, vk_tokken,
+                upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
                                             vk_api_version)
                 photo = upload_photo(upload_url, file_path)
                 owner_id, photo_id = save_photo(vk_url, photo, image_text,
-                                                vk_tokken, vk_group_id,
+                                                vk_token, vk_group_id,
                                                 vk_api_version)
                 publication_photo_on_wall(vk_url, vk_group_id, owner_id,
                                           photo_id,
-                                          vk_tokken, vk_api_version)
+                                          vk_token, vk_api_version)
                 posted_pics.append(image_name)
                 saving_pics_list(posted_pics)
             finally:
@@ -156,9 +156,9 @@ def publication_photo(number_comics, vk_group_id, vk_tokken):
 if __name__ == '__main__':
     load_dotenv()
 
-    vk_tokken = os.getenv('VK_TOKKEN')
+    vk_token = os.getenv('VK_TOKEN')
     vk_group_id = os.getenv('VK_GROUP_ID')
 
     xkcd_url = 'http://xkcd.com/info.0.json'
     number_comics = determining_number_comics(xkcd_url)
-    publication_photo(number_comics, vk_group_id, vk_tokken)
+    publication_photo(number_comics, vk_group_id, vk_token)
