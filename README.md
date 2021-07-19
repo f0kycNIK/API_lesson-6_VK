@@ -39,7 +39,7 @@ The program is started by the command:
 Comics are temporarily downloaded to the `xkcd` folder, at the end of the 
 publication, the comic is entered into the list of publications, the 
 identifier is the name of the comic. Once published, the comic is removed 
-from the `xkcd'.
+from the `xkcd`.
 
 ## Project Goals
 
