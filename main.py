@@ -116,13 +116,6 @@ def saving_pics_list(pics):
         file.write('\n'.join(str(pic) for pic in pics))
 
 
-def deletion_pic(file_path):
-    try:
-        os.remove(file_path)
-    except OSError as exception:
-        print('Ошибка: %s: %s' % (file_path, exception.strerror))
-
-
 def publication_photo(number_comics, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
@@ -149,7 +142,7 @@ def publication_photo(number_comics, vk_group_id, vk_token):
                 posted_pics.append(image_name)
                 saving_pics_list(posted_pics)
             finally:
-                deletion_pic(file_path)
+                os.remove(file_path)
         time.sleep(timeout)
 
 
