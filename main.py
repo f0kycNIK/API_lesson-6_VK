@@ -121,11 +121,11 @@ def publication_photo(number_comics, vk_group_id, vk_token):
     vk_api_version = '5.131'
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
+    posted_pics = opening_pics_list()
     while True:
         random_number_comics = random.randint(1, number_comics)
         url = f'http://xkcd.com/{random_number_comics}/info.0.json'
         image_url, image_name, image_text = get_image_url(url)
-        posted_pics = opening_pics_list()
         if image_name not in posted_pics:
             try:
                 file_path = download_image(image_url, image_name, xkcd_folder)
