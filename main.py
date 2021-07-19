@@ -59,21 +59,15 @@ def get_upload_url(url, vk_group_id, vk_tokken, vk_api_version):
     return upload_url
 
 
-def upload_photo(url, image_name):
-    path = 'xkcd/'
-    dirs = os.listdir(path)
-    for file in dirs:
-        image_path = path + file
-        file_name = file.split('.')[0]
-        if file_name == image_name:
-            with open(image_path, 'rb') as image:
-                files = {
-                    'photo': image,
-                }
-                response = requests.post(url, files=files)
-                response.raise_for_status()
-                photo = response.json()
-                return photo
+def upload_photo(url, image_path):
+        with open(image_path, 'rb') as image:
+            files = {
+                'photo': image,
+            }
+            response = requests.post(url, files=files)
+            response.raise_for_status()
+            photo = response.json()
+            return photo
 
 
 def save_photo(url, photo, text, vk_tokken, group_id, vk_api_version):
@@ -144,7 +138,7 @@ def publication_photo(number_comics, vk_group_id, vk_tokken):
                 vk_url = 'https://api.vk.com/method/'
                 upload_url = get_upload_url(vk_url, vk_group_id, vk_tokken,
                                             vk_api_version)
-                photo = upload_photo(upload_url, image_name)
+                photo = upload_photo(upload_url, file_path)
                 owner_id, photo_id = save_photo(vk_url, photo, image_text,
                                                 vk_tokken, vk_group_id,
                                                 vk_api_version)
