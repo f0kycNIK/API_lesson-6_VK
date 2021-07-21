@@ -9,11 +9,11 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_number_comics(url):
+def get_comics_number(url):
     response = requests.get(url)
     response.raise_for_status()
-    number_comics = response.json()['num']
-    return number_comics
+    comics_number = response.json()['num']
+    return comics_number
 
 
 def get_image_url(url):
@@ -117,15 +117,15 @@ def save_pics_list(pics):
         file.write('\n'.join(str(pic) for pic in pics))
 
 
-def publication_photo(number_comics, vk_group_id, vk_token):
+def publication_photo(comics_number, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list()
     while True:
-        random_number_comics = random.randint(1, number_comics)
-        url = f'http://xkcd.com/{random_number_comics}/info.0.json'
+        random_comics_number = random.randint(1, comics_number)
+        url = f'http://xkcd.com/{random_comics_number}/info.0.json'
         image_url, image_name, image_text = get_image_url(url)
         if image_name not in posted_pics:
             try:
@@ -157,5 +157,5 @@ if __name__ == '__main__':
     vk_group_id = os.getenv('VK_GROUP_ID')
 
     xkcd_url = 'http://xkcd.com/info.0.json'
-    number_comics = get_number_comics(xkcd_url)
-    publication_photo(number_comics, vk_group_id, vk_token)
+    comics_number = get_comics_number(xkcd_url)
+    publication_photo(comics_number, vk_group_id, vk_token)
