@@ -16,7 +16,7 @@ def get_comics_number(url):
     return comics_number
 
 
-def get_image_url(url):
+def get_image_parameters(url):
     response = requests.get(url)
     response.raise_for_status()
     comics = response.json()
@@ -126,7 +126,7 @@ def publication_photo(comics_number, vk_group_id, vk_token):
     while True:
         random_comics_number = random.randint(1, comics_number)
         url = f'http://xkcd.com/{random_comics_number}/info.0.json'
-        image_url, image_name, image_text = get_image_url(url)
+        image_url, image_name, image_text = get_image_parameters(url)
         if image_name not in posted_pics:
             try:
                 file_path = download_image(image_url, image_name, xkcd_folder)
