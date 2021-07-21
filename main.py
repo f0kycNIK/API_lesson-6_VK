@@ -3,6 +3,7 @@ import random
 import time
 from pathlib import Path
 from urllib.parse import urlparse
+from os.path import splitext
 
 import requests
 from dotenv import load_dotenv
@@ -35,11 +36,10 @@ def opening_pics_list():
 
 
 def download_image(image_url, image_name, folder):
-    parse = urlparse(image_url)
-    image_format = parse.path.split('.')[-1]
+    root, image_format = splitext(urlparse(image_url).path)
     response = requests.get(image_url)
     response.raise_for_status()
-    file_path = f'{folder}/{image_name}.{image_format}'
+    file_path = f'{folder}/{image_name}{image_format}'
     with open(file_path, 'wb') as file:
         file.write(response.content)
     return file_path
