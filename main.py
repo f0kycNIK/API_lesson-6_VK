@@ -9,7 +9,7 @@ import requests
 from dotenv import load_dotenv
 
 
-def determining_number_comics(url):
+def get_number_comics(url):
     response = requests.get(url)
     response.raise_for_status()
     number_comics = response.json()['num']
@@ -26,7 +26,7 @@ def get_image_url(url):
     return image_url, image_name, image_text
 
 
-def opening_pics_list():
+def open_pics_list():
     try:
         with open('publication list.txt', 'r', encoding='utf8') as f:
             posted_pics = f.read().splitlines()
@@ -91,8 +91,8 @@ def save_photo(url, server, photo, hash, text, vk_token, group_id,
     return owner_id, photo_id
 
 
-def publication_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
-                              vk_api_version):
+def publish_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
+                          vk_api_version):
     method = 'wall.post'
     from_group = 1
     friends_only = 0
@@ -111,7 +111,7 @@ def publication_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     response.raise_for_status()
 
 
-def saving_pics_list(pics):
+def save_pics_list(pics):
     file_name = 'publication list.txt'
     with open(file_name, 'w') as file:
         file.write('\n'.join(str(pic) for pic in pics))
@@ -122,7 +122,7 @@ def publication_photo(number_comics, vk_group_id, vk_token):
     vk_api_version = '5.131'
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
-    posted_pics = opening_pics_list()
+    posted_pics = open_pics_list()
     while True:
         random_number_comics = random.randint(1, number_comics)
         url = f'http://xkcd.com/{random_number_comics}/info.0.json'
@@ -140,11 +140,11 @@ def publication_photo(number_comics, vk_group_id, vk_token):
                 owner_id, photo_id = save_photo(vk_url, server, photo, hash,
                                                 image_text, vk_token,
                                                 vk_group_id, vk_api_version)
-                publication_photo_on_wall(vk_url, vk_group_id, owner_id,
-                                          photo_id,
-                                          vk_token, vk_api_version)
+                publish_photo_on_wall(vk_url, vk_group_id, owner_id,
+                                      photo_id,
+                                      vk_token, vk_api_version)
                 posted_pics.append(image_name)
-                saving_pics_list(posted_pics)
+                save_pics_list(posted_pics)
             finally:
                 os.remove(file_path)
         time.sleep(timeout)
@@ -157,5 +157,5 @@ if __name__ == '__main__':
     vk_group_id = os.getenv('VK_GROUP_ID')
 
     xkcd_url = 'http://xkcd.com/info.0.json'
-    number_comics = determining_number_comics(xkcd_url)
+    number_comics = get_number_comics(xkcd_url)
     publication_photo(number_comics, vk_group_id, vk_token)
