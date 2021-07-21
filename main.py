@@ -70,14 +70,15 @@ def upload_photo(url, image_path):
         return photo
 
 
-def save_photo(url, photo, text, vk_token, group_id, vk_api_version):
+def save_photo(url, server, photo, hash, text, vk_token, group_id,
+               vk_api_version):
     method = 'photos.saveWallPhoto'
     new_url = url + method
     payload = {
         'group_id': group_id,
-        'server': photo['server'],
-        'photo': photo['photo'],
-        'hash': photo['hash'],
+        'server': server,
+        'photo': photo,
+        'hash': hash,
         'caption': text,
         'access_token': vk_token,
         'v': vk_api_version,
@@ -133,9 +134,12 @@ def publication_photo(number_comics, vk_group_id, vk_token):
                 upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
                                             vk_api_version)
                 photo = upload_photo(upload_url, file_path)
-                owner_id, photo_id = save_photo(vk_url, photo, image_text,
-                                                vk_token, vk_group_id,
-                                                vk_api_version)
+                server = photo['server']
+                photo = photo['photo']
+                hash = photo['hash']
+                owner_id, photo_id = save_photo(vk_url, server, photo, hash,
+                                                image_text, vk_token,
+                                                vk_group_id, vk_api_version)
                 publication_photo_on_wall(vk_url, vk_group_id, owner_id,
                                           photo_id,
                                           vk_token, vk_api_version)
