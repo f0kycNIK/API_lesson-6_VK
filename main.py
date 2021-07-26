@@ -1,9 +1,9 @@
 import os
 import random
 import time
+from os.path import splitext
 from pathlib import Path
 from urllib.parse import urlparse
-from os.path import splitext
 
 import requests
 from dotenv import load_dotenv
@@ -55,7 +55,9 @@ def get_upload_url(url, vk_group_id, vk_token, vk_api_version):
     }
     response = requests.get(new_url, params=payload)
     response.raise_for_status()
-    upload_url = response.json()['response']['upload_url']
+    album_params = response.json()
+    check_error(album_params)
+    upload_url = album_params['response']['upload_url']
     return upload_url
 
 
@@ -66,8 +68,9 @@ def upload_photo(url, image_path):
         }
         response = requests.post(url, files=files)
         response.raise_for_status()
-        photo = response.json()
-        return photo
+        photo_parameters = response.json()
+        check_error(photo_parameters)
+        return photo_parameters
 
 
 def save_photo(url, server, photo, hash, text, vk_token, group_id,
@@ -86,6 +89,7 @@ def save_photo(url, server, photo, hash, text, vk_token, group_id,
     response = requests.post(new_url, data=payload)
     response.raise_for_status()
     image_characteristics = response.json()
+    check_error(image_characteristics)
     owner_id = image_characteristics['response'][0]['owner_id']
     photo_id = image_characteristics['response'][0]['id']
     return owner_id, photo_id
@@ -109,12 +113,25 @@ def publish_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     }
     response = requests.post(new_url, data=payload)
     response.raise_for_status()
+    post_id = response.json()
+    check_error(post_id)
 
 
 def save_pics_list(pics):
     file_name = 'publication list.txt'
     with open(file_name, 'w') as file:
         file.write('\n'.join(str(pic) for pic in pics))
+
+
+def check_error(answer):
+    error_massage = ''
+    if isinstance(answer, dict):
+        try:
+            error_massage = answer['error']['error_msg']
+        except KeyError:
+            pass
+        if error_massage:
+            raise Exception(error_massage)
 
 
 def publication_photo(comics_number, vk_group_id, vk_token):
@@ -133,10 +150,10 @@ def publication_photo(comics_number, vk_group_id, vk_token):
                 vk_url = 'https://api.vk.com/method/'
                 upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
                                             vk_api_version)
-                photo = upload_photo(upload_url, file_path)
-                server = photo['server']
-                photo = photo['photo']
-                hash = photo['hash']
+                photo_parameters = upload_photo(upload_url, file_path)
+                server = photo_parameters['server']
+                photo = photo_parameters['photo']
+                hash = photo_parameters['hash']
                 owner_id, photo_id = save_photo(vk_url, server, photo, hash,
                                                 image_text, vk_token,
                                                 vk_group_id, vk_api_version)
