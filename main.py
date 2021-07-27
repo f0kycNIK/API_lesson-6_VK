@@ -142,8 +142,8 @@ def publication_photo(comics_number, vk_group_id, vk_token):
     posted_pics = open_pics_list()
     while True:
         random_comics_number = random.randint(1, comics_number)
-        url = f'http://xkcd.com/{random_comics_number}/info.0.json'
-        image_url, image_name, image_text = get_image_parameters(url)
+        image_url, image_name, image_text = get_image_parameters(
+            f'http://xkcd.com/{random_comics_number}/info.0.json')
         if image_name not in posted_pics:
             try:
                 file_path = download_image(image_url, image_name, xkcd_folder)
@@ -173,6 +173,5 @@ if __name__ == '__main__':
     vk_token = os.getenv('VK_TOKEN')
     vk_group_id = os.getenv('VK_GROUP_ID')
 
-    xkcd_url = 'http://xkcd.com/info.0.json'
-    comics_number = get_comics_number(xkcd_url)
+    comics_number = get_comics_number('http://xkcd.com/info.0.json')
     publication_photo(comics_number, vk_group_id, vk_token)
