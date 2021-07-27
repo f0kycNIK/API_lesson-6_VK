@@ -67,10 +67,10 @@ def upload_photo(url, image_path):
             'photo': image,
         }
         response = requests.post(url, files=files)
-        response.raise_for_status()
-        photo_parameters = response.json()
-        check_error(photo_parameters)
-        return photo_parameters
+    response.raise_for_status()
+    photo_parameters = response.json()
+    check_error(photo_parameters)
+    return photo_parameters
 
 
 def save_photo(url, server, photo, hash, text, vk_token, group_id,
