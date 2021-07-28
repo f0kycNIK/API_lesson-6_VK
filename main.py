@@ -95,8 +95,8 @@ def save_photo(url, server, photo, photo_hash, text, vk_token, group_id,
     return owner_id, photo_id
 
 
-def publish_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
-                          vk_api_version):
+def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
+                         vk_api_version):
     method = 'wall.post'
     from_group = 1
     friends_only = 0
@@ -134,7 +134,7 @@ def check_error(answer):
             raise Exception(error_massage)
 
 
-def publication_photo(total_comics_number, vk_group_id, vk_token):
+def publish_photo(total_comics_number, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     file_path = ''
@@ -159,9 +159,9 @@ def publication_photo(total_comics_number, vk_group_id, vk_token):
                                                 photo_hash, image_text,
                                                 vk_token, vk_group_id,
                                                 vk_api_version)
-                publish_photo_on_wall(vk_url, vk_group_id, owner_id,
-                                      photo_id,
-                                      vk_token, vk_api_version)
+                upload_photo_on_wall(vk_url, vk_group_id, owner_id,
+                                     photo_id,
+                                     vk_token, vk_api_version)
                 posted_pics.append(image_name)
                 save_pics_list(posted_pics)
             finally:
@@ -177,4 +177,4 @@ if __name__ == '__main__':
     vk_group_id = os.getenv('VK_GROUP_ID')
 
     total_comics_number = get_total_comics_number('http://xkcd.com/info.0.json')
-    publication_photo(total_comics_number, vk_group_id, vk_token)
+    publish_photo(total_comics_number, vk_group_id, vk_token)
