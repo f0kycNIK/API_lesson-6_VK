@@ -137,6 +137,7 @@ def check_error(answer):
 def publication_photo(comics_number, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
+    file_path = ''
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list()
@@ -154,16 +155,18 @@ def publication_photo(comics_number, vk_group_id, vk_token):
                 server = photo_parameters['server']
                 photo = photo_parameters['photo']
                 photo_hash = photo_parameters['hash']
-                owner_id, photo_id = save_photo(vk_url, server, photo, photo_hash,
-                                                image_text, vk_token,
-                                                vk_group_id, vk_api_version)
+                owner_id, photo_id = save_photo(vk_url, server, photo,
+                                                photo_hash, image_text,
+                                                vk_token, vk_group_id,
+                                                vk_api_version)
                 publish_photo_on_wall(vk_url, vk_group_id, owner_id,
                                       photo_id,
                                       vk_token, vk_api_version)
                 posted_pics.append(image_name)
                 save_pics_list(posted_pics)
             finally:
-                os.remove(file_path)
+                if file_path:
+                    os.remove(file_path)
         time.sleep(timeout)
 
 
