@@ -4,6 +4,7 @@ import time
 from os.path import splitext
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.parse import unquote
 
 import requests
 from dotenv import load_dotenv
@@ -36,7 +37,7 @@ def open_pics_list():
 
 
 def download_image(image_url, image_name, folder):
-    root, image_format = splitext(urlparse(image_url).path)
+    root, image_format = splitext(unquote(urlparse(image_url).path))
     response = requests.get(image_url)
     response.raise_for_status()
     file_path = f'{folder}/{image_name}{image_format}'
