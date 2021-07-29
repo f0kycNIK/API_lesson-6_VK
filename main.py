@@ -142,27 +142,24 @@ def publish_photo(total_comics_number, vk_group_id, vk_token):
         image_url, image_name, image_text = get_image_parameters(
             f'http://xkcd.com/{random_comics_number}/info.0.json')
         if image_name not in posted_pics:
-            try:
-                file_path = download_image(image_url, image_name, xkcd_folder)
-                vk_url = 'https://api.vk.com/method/'
-                upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
+            file_path = download_image(image_url, image_name, xkcd_folder)
+            vk_url = 'https://api.vk.com/method/'
+            upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
+                                        vk_api_version)
+            photo_parameters = upload_photo(upload_url, file_path)
+            server = photo_parameters['server']
+            photo = photo_parameters['photo']
+            photo_hash = photo_parameters['hash']
+            owner_id, photo_id = save_photo(vk_url, server, photo,
+                                            photo_hash, image_text,
+                                            vk_token, vk_group_id,
                                             vk_api_version)
-                photo_parameters = upload_photo(upload_url, file_path)
-                server = photo_parameters['server']
-                photo = photo_parameters['photo']
-                photo_hash = photo_parameters['hash']
-                owner_id, photo_id = save_photo(vk_url, server, photo,
-                                                photo_hash, image_text,
-                                                vk_token, vk_group_id,
-                                                vk_api_version)
-                upload_photo_on_wall(vk_url, vk_group_id, owner_id,
-                                     photo_id,
-                                     vk_token, vk_api_version)
-                posted_pics.append(image_name)
-                save_pics_list(posted_pics)
-            finally:
-                if file_path:
-                    os.remove(file_path)
+            upload_photo_on_wall(vk_url, vk_group_id, owner_id,
+                                 photo_id,
+                                 vk_token, vk_api_version)
+            posted_pics.append(image_name)
+            save_pics_list(posted_pics)
+            os.remove(file_path)
         time.sleep(timeout)
 
 
@@ -172,5 +169,6 @@ if __name__ == '__main__':
     vk_token = os.getenv('VK_TOKEN')
     vk_group_id = os.getenv('VK_GROUP_ID')
 
-    total_comics_number = get_total_comics_number('http://xkcd.com/info.0.json')
+    total_comics_number = get_total_comics_number(
+        'http://xkcd.com/info.0.json')
     publish_photo(total_comics_number, vk_group_id, vk_token)
