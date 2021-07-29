@@ -103,10 +103,10 @@ def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     from_group = 1
     friends_only = 0
     method_url = '{}{}'.format(url, method)
-    modify_group_id = f'-{vk_group_id}'
+    corrected_group_id = f'-{vk_group_id}'
     payload = {
         'photo_id': photo_id,
-        'owner_id': modify_group_id,
+        'owner_id': corrected_group_id,
         'from_group': from_group,
         'friends_only': friends_only,
         'attachments': f'photo{owner_id}_{photo_id}',
@@ -140,7 +140,6 @@ def publish_photo(total_comics_number, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     file_path = ''
-
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list()
