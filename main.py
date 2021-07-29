@@ -49,7 +49,6 @@ def download_image(image_url, image_name, folder):
 def get_upload_url(url, vk_group_id, vk_token, vk_api_version):
     method = 'photos.getWallUploadServer'
     method_url = '{}{}'.format(url, method)
-    print(method_url)
     payload = {
         'group_id': vk_group_id,
         'access_token': vk_token,
@@ -126,14 +125,9 @@ def save_pics_list(pics):
 
 
 def check_error(answer):
-    error_massage = ''
-    if isinstance(answer, dict):
-        try:
-            error_massage = answer['error']['error_msg']
-        except KeyError:
-            pass
-        if error_massage:
-            raise Exception(error_massage)
+    if answer.get('error'):
+        error_massage = answer['error']['error_msg']
+        raise Exception(error_massage)
 
 
 def publish_photo(total_comics_number, vk_group_id, vk_token):
