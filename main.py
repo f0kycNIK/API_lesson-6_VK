@@ -48,13 +48,14 @@ def download_image(image_url, image_name, folder):
 
 def get_upload_url(url, vk_group_id, vk_token, vk_api_version):
     method = 'photos.getWallUploadServer'
-    new_url = url + method
+    method_url = '{}{}'.format(url, method)
+    print(method_url)
     payload = {
         'group_id': vk_group_id,
         'access_token': vk_token,
         'v': vk_api_version,
     }
-    response = requests.get(new_url, params=payload)
+    response = requests.get(method_url, params=payload)
     response.raise_for_status()
     album_params = response.json()
     check_error(album_params)
@@ -77,7 +78,7 @@ def upload_photo(url, image_path):
 def save_photo(url, server, photo, photo_hash, text, vk_token, group_id,
                vk_api_version):
     method = 'photos.saveWallPhoto'
-    new_url = url + method
+    method_url = '{}{}'.format(url, method)
     payload = {
         'group_id': group_id,
         'server': server,
@@ -87,7 +88,7 @@ def save_photo(url, server, photo, photo_hash, text, vk_token, group_id,
         'access_token': vk_token,
         'v': vk_api_version,
     }
-    response = requests.post(new_url, data=payload)
+    response = requests.post(method_url, data=payload)
     response.raise_for_status()
     image_characteristics = response.json()
     check_error(image_characteristics)
@@ -101,7 +102,7 @@ def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     method = 'wall.post'
     from_group = 1
     friends_only = 0
-    new_url = url + method
+    method_url = '{}{}'.format(url, method)
     modify_group_id = f'-{vk_group_id}'
     payload = {
         'photo_id': photo_id,
@@ -112,7 +113,7 @@ def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
         'access_token': vk_token,
         'v': vk_api_version,
     }
-    response = requests.post(new_url, data=payload)
+    response = requests.post(method_url, data=payload)
     response.raise_for_status()
     post_id = response.json()
     check_error(post_id)
@@ -139,6 +140,7 @@ def publish_photo(total_comics_number, vk_group_id, vk_token):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     file_path = ''
+
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list()
