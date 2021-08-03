@@ -10,26 +10,28 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_total_comics_number(url):
-    response = requests.get(url)
+def get_total_comics_number():
+    xkcd_url = 'http://xkcd.com/info.0.json'
+    response = requests.get(xkcd_url)
     response.raise_for_status()
     total_comics_number = response.json()['num']
     return total_comics_number
 
 
-def get_image_parameters(url):
+def get_comics_parameters(random_comics_number):
+    url = f'http://xkcd.com/{random_comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
     comics = response.json()
-    image_url = comics['img']
-    image_name = comics['title']
-    image_text = comics['alt']
-    return image_url, image_name, image_text
+    comics_url = comics['img']
+    comics_name = comics['title']
+    comics_text = comics['alt']
+    return comics_url, comics_name, comics_text
 
 
-def open_pics_list():
+def open_pics_list(path_publication_list):
     try:
-        with open('publication list.txt', 'r', encoding='utf8') as f:
+        with open(path_publication_list, 'r', encoding='utf8') as f:
             posted_pics = f.read().splitlines()
     except FileNotFoundError:
         posted_pics = []
@@ -118,9 +120,8 @@ def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     check_error(post_id)
 
 
-def save_pics_list(pics):
-    file_name = 'publication list.txt'
-    with open(file_name, 'w') as file:
+def save_pics_list(pics, path_publication_list):
+    with open(path_publication_list, 'w') as file:
         file.write('\n'.join(str(pic) for pic in pics))
 
 
@@ -130,19 +131,20 @@ def check_error(answer):
         raise Exception(error_massage)
 
 
-def publish_photo(total_comics_number, vk_group_id, vk_token):
+def publish_photo(total_comics_number, vk_group_id, vk_token,
+                  path_publication_list):
     xkcd_folder = 'xkcd'
     vk_api_version = '5.131'
     file_path = ''
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
-    posted_pics = open_pics_list()
+    posted_pics = open_pics_list(path_publication_list)
     while True:
         random_comics_number = random.randint(1, total_comics_number)
-        image_url, image_name, image_text = get_image_parameters(
-            f'http://xkcd.com/{random_comics_number}/info.0.json')
-        if image_name not in posted_pics:
-            file_path = download_image(image_url, image_name, xkcd_folder)
+        comics_url, comics_name, comics_text = get_comics_parameters(
+            random_comics_number)
+        if comics_name not in posted_pics:
+            file_path = download_image(comics_url, comics_name, xkcd_folder)
             vk_url = 'https://api.vk.com/method/'
             upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
                                         vk_api_version)
@@ -151,14 +153,14 @@ def publish_photo(total_comics_number, vk_group_id, vk_token):
             photo = photo_parameters['photo']
             photo_hash = photo_parameters['hash']
             owner_id, photo_id = save_photo(vk_url, server, photo,
-                                            photo_hash, image_text,
+                                            photo_hash, comics_text,
                                             vk_token, vk_group_id,
                                             vk_api_version)
             upload_photo_on_wall(vk_url, vk_group_id, owner_id,
                                  photo_id,
                                  vk_token, vk_api_version)
-            posted_pics.append(image_name)
-            save_pics_list(posted_pics)
+            posted_pics.append(comics_name)
+            save_pics_list(posted_pics, path_publication_list)
             os.remove(file_path)
         time.sleep(timeout)
 
@@ -169,6 +171,7 @@ if __name__ == '__main__':
     vk_token = os.getenv('VK_TOKEN')
     vk_group_id = os.getenv('VK_GROUP_ID')
 
-    total_comics_number = get_total_comics_number(
-        'http://xkcd.com/info.0.json')
-    publish_photo(total_comics_number, vk_group_id, vk_token)
+    path_publication_list = 'publication_list.txt'
+    total_comics_number = get_total_comics_number()
+    publish_photo(total_comics_number, vk_group_id, vk_token,
+                  path_publication_list)
