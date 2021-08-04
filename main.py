@@ -125,10 +125,10 @@ def save_pics_list(pics, path_publication_list):
         file.write('\n'.join(str(pic) for pic in pics))
 
 
-def check_error(answer):
+def  check_error(answer):
     if answer.get('error'):
         error_massage = answer['error']['error_msg']
-        raise Exception(error_massage)
+        raise requests.HTTPError(error_massage)
 
 
 def publish_photo(total_comics_number, vk_group_id, vk_token,
