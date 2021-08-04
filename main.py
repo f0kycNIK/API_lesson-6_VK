@@ -145,14 +145,12 @@ def upload_photo_on_wall_vk(vk_group_id, vk_token, file_path, comics_text):
                                     vk_token, vk_group_id,
                                     vk_api_version)
     upload_photo_on_wall(vk_url, vk_group_id, owner_id,
-                         photo_id,
-                         vk_token, vk_api_version)
+                         photo_id, vk_token, vk_api_version)
 
 
 def publish_photos(total_comics_number, vk_group_id, vk_token,
                    path_publication_list):
     xkcd_folder = 'xkcd'
-
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list(path_publication_list)
