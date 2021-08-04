@@ -131,11 +131,28 @@ def check_error(answer):
         raise requests.HTTPError(error_massage)
 
 
+def upload_photo_on_wall_vk(vk_group_id, vk_token, file_path, comics_text):
+    vk_api_version = '5.131'
+    vk_url = 'https://api.vk.com/method/'
+    upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
+                                vk_api_version)
+    photo_parameters = upload_photo(upload_url, file_path)
+    server = photo_parameters['server']
+    photo = photo_parameters['photo']
+    photo_hash = photo_parameters['hash']
+    owner_id, photo_id = save_photo(vk_url, server, photo,
+                                    photo_hash, comics_text,
+                                    vk_token, vk_group_id,
+                                    vk_api_version)
+    upload_photo_on_wall(vk_url, vk_group_id, owner_id,
+                         photo_id,
+                         vk_token, vk_api_version)
+
+
 def publish_photos(total_comics_number, vk_group_id, vk_token,
                    path_publication_list):
     xkcd_folder = 'xkcd'
-    vk_api_version = '5.131'
-    file_path = ''
+
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
     posted_pics = open_pics_list(path_publication_list)
@@ -146,23 +163,13 @@ def publish_photos(total_comics_number, vk_group_id, vk_token,
         if comics_name in posted_pics:
             continue
         file_path = download_image(comics_url, comics_name, xkcd_folder)
-        vk_url = 'https://api.vk.com/method/'
-        upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
-                                    vk_api_version)
-        photo_parameters = upload_photo(upload_url, file_path)
-        server = photo_parameters['server']
-        photo = photo_parameters['photo']
-        photo_hash = photo_parameters['hash']
-        owner_id, photo_id = save_photo(vk_url, server, photo,
-                                        photo_hash, comics_text,
-                                        vk_token, vk_group_id,
-                                        vk_api_version)
-        upload_photo_on_wall(vk_url, vk_group_id, owner_id,
-                             photo_id,
-                             vk_token, vk_api_version)
-        posted_pics.append(comics_name)
-        save_pics_list(posted_pics, path_publication_list)
-        os.remove(file_path)
+        try:
+            upload_photo_on_wall_vk(vk_group_id, vk_token, file_path,
+                                    comics_text)
+            posted_pics.append(comics_name)
+            save_pics_list(posted_pics, path_publication_list)
+        finally:
+            os.remove(file_path)
         time.sleep(timeout)
 
 
