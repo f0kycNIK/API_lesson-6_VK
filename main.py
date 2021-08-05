@@ -18,8 +18,8 @@ def get_total_comics_number():
     return total_comics_number
 
 
-def get_comics_parameters(random_comics_number):
-    url = f'http://xkcd.com/{random_comics_number}/info.0.json'
+def get_comics_parameters(comics_number):
+    url = f'http://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
     comics = response.json()
