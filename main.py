@@ -29,9 +29,9 @@ def get_comics_parameters(comics_number):
     return comics_url, comics_name, comics_text
 
 
-def open_pics_list(path_publication_list):
+def open_pics_list(publication_list_path):
     try:
-        with open(path_publication_list, 'r', encoding='utf8') as f:
+        with open(publication_list_path, 'r', encoding='utf8') as f:
             posted_pics = f.read().splitlines()
     except FileNotFoundError:
         posted_pics = []
@@ -120,8 +120,8 @@ def upload_photo_on_wall(url, vk_group_id, owner_id, photo_id, vk_token,
     check_error(post_id)
 
 
-def save_pics_list(pics, path_publication_list):
-    with open(path_publication_list, 'w') as file:
+def save_pics_list(pics, publication_list_path):
+    with open(publication_list_path, 'w') as file:
         file.write('\n'.join(str(pic) for pic in pics))
 
 
@@ -132,28 +132,28 @@ def check_error(answer):
 
 
 def upload_photo_on_wall_vk(vk_group_id, vk_token, file_path, comics_text):
-    vk_api_version = '5.131'
-    vk_url = 'https://api.vk.com/method/'
-    upload_url = get_upload_url(vk_url, vk_group_id, vk_token,
-                                vk_api_version)
+    api_version = '5.131'
+    url = 'https://api.vk.com/method/'
+    upload_url = get_upload_url(url, vk_group_id, vk_token,
+                                api_version)
     photo_parameters = upload_photo(upload_url, file_path)
     server = photo_parameters['server']
     photo = photo_parameters['photo']
     photo_hash = photo_parameters['hash']
-    owner_id, photo_id = save_photo(vk_url, server, photo,
+    owner_id, photo_id = save_photo(url, server, photo,
                                     photo_hash, comics_text,
                                     vk_token, vk_group_id,
-                                    vk_api_version)
-    upload_photo_on_wall(vk_url, vk_group_id, owner_id,
-                         photo_id, vk_token, vk_api_version)
+                                    api_version)
+    upload_photo_on_wall(url, vk_group_id, owner_id,
+                         photo_id, vk_token, api_version)
 
 
 def publish_photos(total_comics_number, vk_group_id, vk_token,
-                   path_publication_list):
+                   publication_list_path):
     xkcd_folder = 'xkcd'
     Path(xkcd_folder).mkdir(parents=True, exist_ok=True)
     timeout = 24 * 60 * 60
-    posted_pics = open_pics_list(path_publication_list)
+    posted_pics = open_pics_list(publication_list_path)
     while True:
         random_comics_number = random.randint(1, total_comics_number)
         comics_url, comics_name, comics_text = get_comics_parameters(
@@ -165,7 +165,7 @@ def publish_photos(total_comics_number, vk_group_id, vk_token,
             upload_photo_on_wall_vk(vk_group_id, vk_token, file_path,
                                     comics_text)
             posted_pics.append(comics_name)
-            save_pics_list(posted_pics, path_publication_list)
+            save_pics_list(posted_pics, publication_list_path)
         finally:
             os.remove(file_path)
         time.sleep(timeout)
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     vk_token = os.getenv('VK_TOKEN')
     vk_group_id = os.getenv('VK_GROUP_ID')
 
-    path_publication_list = 'publication_list.txt'
+    publication_list_path = 'publication_list.txt'
     total_comics_number = get_total_comics_number()
     publish_photos(total_comics_number, vk_group_id, vk_token,
-                   path_publication_list)
+                   publication_list_path)
